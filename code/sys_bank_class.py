@@ -1,4 +1,4 @@
-from abc, import ABC, abstractmethod
+from abc import ABC, abstractmethod
 
 class Conta: 
     def __init__(self, saldo, numero, agencia, cliente, historico):
