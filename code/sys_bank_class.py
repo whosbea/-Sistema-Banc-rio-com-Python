@@ -14,6 +14,7 @@ class Conta:
 
     @classmethod
     def nova_conta(cls, cliente, numero):
+        #logica...
         return cls(numero, cliente)
     
     @property
