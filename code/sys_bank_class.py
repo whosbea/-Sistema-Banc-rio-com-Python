@@ -111,7 +111,7 @@ class Transacao(ABC):
 
 
 class Deposito(Transacao):
-   def __init__(self, valor):
+    def __init__(self, valor):
        self._valor = valor
     
     @property
@@ -125,7 +125,7 @@ class Deposito(Transacao):
             conta.historico.adicionar_transacao(self)
 
 class Saque(Transacao):
-   def __init__(self, valor):
+    def __init__(self, valor):
        self._valor = valor
     
     @property
