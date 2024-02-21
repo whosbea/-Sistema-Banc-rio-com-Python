@@ -2,82 +2,95 @@ from abc import ABC, abstractmethod, abstractproperty
 
 
 class Conta:
-    def __init__(self, saldo, numero, agencia, cliente, historico):
-        self.saldo = saldo
-        self.numero = numero
-        self.agencia = agencia
-        self.cliente = cliente
-        self.historico = Historico(transacoes_cliente)
+    def __init__(self, numero, cliente):
+        self._saldo = 0
+        self._numero = numero
+        self._agencia = "0001"
+        self._cliente = cliente
+        self._historico = Historico()
 
     def __str__(self):
         return f"{self.__class__.__name__}: {", ". join([f'{chave}: {valor}' for chave, valor in self.__dict__.items()])}"
 
-    def mostrar_saldo(self):
-        print("Mostrando saldo...")
-        print(f"Saldo de {self.saldo} reais")
-        pass
-
-    def criar_conta(self):
-        cliente = Cliente(end_cliente, contas_cliente)
-        numero = 12345
-        print("Criando conta...")
-        print(f"As informações da sua conta são: {self}")
-        pass
-
+    @classmethod
+    def nova_conta(cls, cliente, numero):
+        return cls(numero, cliente)
+    
+    @property
+    def saldo(self):
+        return self._saldo
+    
+    @property
+    def numero(self):
+        return self._numero
+    
+    @property
+    def agencia(self):
+        return self._agencia
+    
+    @property
+    def cliente(self):
+        return self._cliente
+    
+    @property
+    def historico(self):
+        return self._historico
+    
     def sacar(self, valor):
-        self.valor = valor
-        return True
+        valor = self._saldo
+        #logica... return true return false
         
-
     def depositar(self, valor):
-        self.valor = valor
-        return True
+        #logica...return true return false
+        self._saldo += valor
+    
 
 
 class ContaCorrente(Conta):
-    def __init__(self, saldo, numero, agencia, cliente, historico, limite, limite_saques):
-        super().__init__(saldo, numero, agencia, cliente, historico)
+    def __init__(self, numero, cliente, limite = 500, limite_saques = 3):
+        super().__init__(numero, cliente)
         self.limite = limite
         self.limite_saques = limite_saques
 
+    #sobrescrita do metodo sacar
+    def sacar(self, valor):
+        #logica com os limites... super().sacar(valor)
+        pass
+    
     def __str__(self):
-        return f"{self.__class__.__name__}: {", ". join([f'{chave}: {valor}' for chave, valor in self.__dict__.items()])}"
-
+        return f"""
+    """
 
 class Historico():
-    def __init__(self, trasacoes):
-        self.transacoes = trasacoes
+    def __init__(self):
+        self._transacoes = []
         pass
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {", ". join([f'{chave}: {valor}' for chave, valor in self.__dict__.items()])}"
+        @property
+        def transacoes(self):
+            return self._transacoes
 
     def adicionar_transacao(self, transacao):
-        print("Adicionando transação...")
-        print(f"{transacao} adicionada.")
+        self._transacoes.append({
+            
+        })
 
 
 class Cliente:
     def __init__(self, endereco, contas) -> None:
         self.endereco = endereco
-        self.contas = contas
+        self.contas = []
 
     def realizar_transacao(self, conta, transacao):
-        transacao = input("Qual tipo de transação gostaria de fazer? ")
-        conta = input("Para qual conta quer realizar a transação? ")
+        transacao.registrar(conta)
         
-        print(f"Realizando {transacao} para conta {conta}...")
-        print(f"{transacao} realizado com sucesso.")
-
     def adicionar_conta(self, conta):
-        conta = input("Qual conta gostaria de adicionar? ")
-        
-        print(f"Adicionando {conta}...")
-        print(f"{conta} adicionada.")
+        self.contas.append(conta)
 
 
-class PessoaFisica():
-    def __init__(self, cpf, nome, data_nascimento) -> None:
+class PessoaFisica(Cliente):
+    def __init__(self, cpf, nome, data_nascimento, endereco):
+        super.__init__(endereco)
         self.cpf = cpf
         self.nome = nome
         self.data_nascimento = data_nascimento
@@ -87,47 +100,42 @@ class PessoaFisica():
 
 
 class Transacao(ABC):
+    @property
+    @abstractproperty
+    def valor(self):
+        pass
+    
     @abstractmethod
     def registrar(self, conta):
-        self.conta = conta
-
-        print("Registrando transações...")
-        print("Transações registradas")
         pass
 
 
 class Deposito(Transacao):
-    @abstractmethod    
-    def depositar(self):
-        valor = float(input("Quanto deseja depositar? "))
-
-        print("Depositando...")
-        print(f"Valor de R${valor:.2f} depositado com sucesso.")
-
+   def __init__(self, valor):
+       self._valor = valor
+    
+    @property
+    def valor(self):
+        return self._valor
+    
+    def registrar(self, conta):
+        sucesso_transacao = conta.depositar(self.valor)
+        
+        if sucesso_transacao:
+            conta.historico.adicionar_transacao(self)
 
 class Saque(Transacao):
-    @abstractmethod
-    def sacar(self):
-        valor = float(input("Quanto deseja sacar? "))
+   def __init__(self, valor):
+       self._valor = valor
+    
+    @property
+    def valor(self):
+        return self._valor
+    
+    def registrar(self, conta):
+        sucesso_transacao = conta.sacar(self.valor)
+        
+        if sucesso_transacao:
+            conta.historico.adicionar_transacao(self)
 
-        print("Sacando...")
-        print(f"Valor de R${valor:.2f} sacado com sucesso.")
 
-
-end_cliente = "Rua 3"
-contas_cliente = "1"
-
-transacoes_cliente = "retirou 1 real"
-
-
-cliente1 = Cliente(end_cliente, contas_cliente)
-historico_cliente1 = Historico()
-cliente1.adicionar_conta(Conta(1000, 1234, "0001", cliente1, historico_cliente1))
-
-transacao_deposito = Deposito()
-transacao_deposito.registrar(cliente1.contas[0])
-cliente1.contas[0].mostrar_saldo()
-
-transacao_saque = Saque()
-transacao_saque.registrar(cliente1.contas[0])
-cliente1.contas[0].mostrar_saldo()
