@@ -6,12 +6,21 @@ class Conta:
         self.numero = numero
         self.agencia = agencia
         self.cliente = cliente
-        self.historico = historico
+        self.historico = Historico(transacoes_cliente)
+        
+    def __str__(self):
+        return f"{self.__class__.__name__}: {", ". join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
         
     def mostrar_saldo(self):
+        print("Mostrando saldo...")
+        print("Saldo de 1000 reais")
         pass
     
-    def criar_conta(self, cliente, numero):
+    def criar_conta(self):
+        cliente = Cliente(end_cliente, contas_cliente)
+        numero = 12345
+        print("Criando conta...")
+        print(f"As informações da sua conta são: {Conta}")
         pass
     
     def sacar(self):
@@ -57,3 +66,7 @@ class Deposito(Transacao):
 class Saque(Transacao):
     pass
 
+end_cliente = "Rua 3"
+contas_cliente = "1"
+
+transacoes_cliente = "retirou 1 real"
