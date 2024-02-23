@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod, abstractproperty
+from datetime import datetime
 
 class Conta:
     def __init__(self, numero, cliente):
@@ -69,23 +70,23 @@ class ContaCorrente(Conta):
         self.limite = limite
         self.limite_saques = limite_saques
 
-    def sacar(self, valor):
-        
-        if self.limite_saques <= 3:
+    def sacar(self, valor):      
+        numero_saques = len([transacao for transacao in self.historico._transacoes if transacao["tipo"] == Saque.__name__]) 
+        if self.limite_saques >= numero_saques:
             if valor <= 500:
                 super().sacar(valor)
-                return True
             else:
                 print("Valor superior ao limite por saque, por favor tente novamente.")
         else:
             print("Limite de saques diarios atingidos.")
         
         return False
-        
-    
+           
     def __str__(self):
         return f"""
-    
+            Agência:\t{self.agencia}
+            C/C:\t\t{self.numero}
+            Titular:\t{self.cliente.nome}
     """
 
 class Historico():
@@ -98,9 +99,13 @@ class Historico():
             return self._transacoes
 
     def adicionar_transacao(self, transacao):
-        self._transacoes.append({
-            
-        })
+        self._transacoes.append(
+            {
+                "tipo": transacao.__class__.__name__,
+                "valor": transacao.valor,
+                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s"),
+            }
+        )
 
 
 class Cliente:
