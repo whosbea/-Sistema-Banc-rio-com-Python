@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod, abstractproperty
 
-
 class Conta:
     def __init__(self, numero, cliente):
         self._saldo = 0
@@ -14,7 +13,6 @@ class Conta:
 
     @classmethod
     def nova_conta(cls, cliente, numero):
-        #logica...
         return cls(numero, cliente)
     
     @property
@@ -38,14 +36,32 @@ class Conta:
         return self._historico
     
     def sacar(self, valor):
-        valor = self._saldo
-        #logica... return true return false
         
-    def depositar(self, valor):
-        #logica...return true return false
-        self._saldo += valor
-    
+        if valor > self._saldo:
+            print(f"\nOperação inválida, você não tem saldo suficiente. Saldo atual: R${self._saldo:.2f}")
 
+        elif valor > 0:
+            self._saldo -= valor
+            print("\nSaque realizado com sucesso!")
+            return True
+
+        else:
+            print("\nValor inválido, tente novamente.")
+
+        return False
+
+                
+    def depositar(self, valor):
+        
+        if valor < 0:
+            print("\nValor inválido, tente novamente.")
+        
+        else:
+            self._saldo += valor
+            print("\nDeposito realizado com sucesso!")
+            return True
+
+        return False
 
 class ContaCorrente(Conta):
     def __init__(self, numero, cliente, limite = 500, limite_saques = 3):
@@ -53,13 +69,23 @@ class ContaCorrente(Conta):
         self.limite = limite
         self.limite_saques = limite_saques
 
-    #sobrescrita do metodo sacar
     def sacar(self, valor):
-        #logica com os limites... super().sacar(valor)
-        pass
+        
+        if self.limite_saques <= 3:
+            if valor <= 500:
+                super().sacar(valor)
+                return True
+            else:
+                print("Valor superior ao limite por saque, por favor tente novamente.")
+        else:
+            print("Limite de saques diarios atingidos.")
+        
+        return False
+        
     
     def __str__(self):
         return f"""
+    
     """
 
 class Historico():
