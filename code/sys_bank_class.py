@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod, abstractproperty
-from datetime import datetime
 
 
 class Conta:
@@ -9,9 +8,6 @@ class Conta:
         self._agencia = "0001"
         self._cliente = cliente
         self._historico = Historico()
-
-    def __str__(self):
-        return f"{self.__class__.__name__}: {", ". join([f'{chave}: {valor}' for chave, valor in self.__dict__.items()])}"
 
     @classmethod
     def nova_conta(cls, cliente, numero):
@@ -107,7 +103,6 @@ class Historico():
             {
                 "tipo": transacao.__class__.__name__,
                 "valor": transacao.valor,
-                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%s"),
             }
         )
 
@@ -125,14 +120,11 @@ class Cliente:
 
 
 class PessoaFisica(Cliente):
-    def __init__(self, cpf, nome, data_nascimento, endereco, contas):
-        super().__init__(endereco, contas)
-        self.cpf = cpf
+    def __init__(self, nome, data_nascimento, cpf, endereco):
+        super().__init__(endereco)
         self.nome = nome
         self.data_nascimento = data_nascimento
-
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}: {", ". join([f'{chave}: {valor}' for chave, valor in self.__dict__.items()])}"
+        self.cpf = cpf
 
 
 class Transacao(ABC):
@@ -223,12 +215,4 @@ def depositar(clientes):
     else:
         cliente.realizar_transacao(conta, transacao)
     return f"Deposito no valor de R${valor:.2f} realizado com sucesso!"
-
-# Criando uma instância de PessoaFisica
-# Criando uma instância de PessoaFisica
-cliente_existente = PessoaFisica(cpf="123", nome="Fulano", data_nascimento="01/01/2000", endereco="Rua Exemplo, 123", contas= ["123"])
-
-# Testando a função depositar com o cliente existente
-depositar(clientes=[cliente_existente])
-
 
