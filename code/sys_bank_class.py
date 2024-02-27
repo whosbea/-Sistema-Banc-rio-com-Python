@@ -41,7 +41,7 @@ class Conta:
 
         elif valor > 0:
             self._saldo -= valor
-            print("\nSaque realizado com sucesso!")
+            print("\nSacando...")
             return True
 
         else:
@@ -56,7 +56,7 @@ class Conta:
 
         else:
             self._saldo += valor
-            print("\nDeposito realizado com sucesso!")
+            print("\nDepositando...")
             return True
 
         return False
@@ -180,6 +180,8 @@ def menu():
     opcao = input(menu)
     return opcao
 
+def criar_cliente(clientes):
+    
 
 def filtrar_cliente(cpf, clientes):
     clientes_filtrados = []
@@ -214,5 +216,53 @@ def depositar(clientes):
         return
     else:
         cliente.realizar_transacao(conta, transacao)
-    return f"Deposito no valor de R${valor:.2f} realizado com sucesso!"
+    return print(f"Deposito no valor de R${valor:.2f} realizado com sucesso!")
 
+
+def sacar(clientes):
+    cpf = str(input("Digite o cpf do cliente: "))
+    cliente = filtrar_cliente(cpf, clientes)
+
+    if not cliente:
+        print("O cliente não tem uma conta neste banco.")
+        return
+
+    valor = float(input("Qual valor do saque? R$"))
+    transacao = Saque(valor)
+
+    conta = resgatar_conta_cliente(cliente)
+
+    if not conta:
+        return
+    else:
+        cliente.realizar_transacao(conta, transacao)
+    return print(f"Saque no valor de R${valor:.2f} realizado com sucesso!")
+
+
+def exibir_extrato(clientes):
+    cpf = str(input("Digite o cpf do cliente: "))
+    cliente = filtrar_cliente(cpf, clientes)
+
+    if not cliente:
+        print("O cliente não tem uma conta neste banco.")
+        return
+
+    conta = resgatar_conta_cliente(cliente)
+
+    if not conta:
+        return
+    else:
+        transacoes = conta.historico.transacoes
+        extrato = "Extrato"
+        print(extrato.center(31 ,"_"))
+        
+        if not transacoes:
+            return print(f"\nNão foram feitas transações.\nSeu saldo é de R${conta.saldo:.2f}\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        else:
+            for transacao in transacoes:
+                print(f"{transacao['tipo']} de R${transacao['valor']:.2f}")
+    
+    print(f"\nSeu saldo é de R${conta.saldo:.2f}")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    
+    
