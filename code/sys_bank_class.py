@@ -175,13 +175,54 @@ def menu():
         [2] Saque
         [3] Extrato
         [4] Cadastrar Usuario
-        [5] Criar Conta Corrente\n
+        [5] Criar Conta Corrente
+        [6] Listar contas\n
     """
-    opcao = input(menu)
-    return opcao
+
+    return int(input(menu))
+
 
 def criar_cliente(clientes):
-    
+    cpf = str(input("Digite seu cpf: "))
+    cliente = filtrar_cliente(cpf, clientes)
+
+    if not cliente:
+        nome = str(input('Digite seu nome completo: '))
+        data_nascimento = str(
+            input('Digite sua data de nascimento (dd/mm/aaaa): '))
+        endereco = str(
+            input("Digite seu endereço (rua, numero - bairro - cidade/sigla estado):"))
+
+        cliente = PessoaFisica(
+            nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=endereco)
+        clientes.append(cliente)
+
+        print(f"Cadastro realizado com sucesso {
+              nome}, agora crie sua conta no banco.")
+    else:
+        print("Ja existe um cliente cadastrado com esse cpf!")
+
+
+def criar_conta(numero_conta, clientes, contas):
+    cpf = str(input("Digite o cpf do cliente: "))
+    cliente = filtrar_cliente(cpf, clientes)
+
+    if not cliente:
+        print('Cliente não encontrado, operação encerrada.')
+    else:
+        conta = ContaCorrente.nova_conta(cliente=cliente, numero=numero_conta)
+        contas.append(conta)
+        cliente.contas.append(conta)
+
+        print('Conta criada com sucesso.')
+
+
+def listar_contas(contas):
+    print('Lista de contas'.center(45, '-'))
+    for conta in contas:
+        print(conta)
+    print('-'*45)
+
 
 def filtrar_cliente(cpf, clientes):
     clientes_filtrados = []
@@ -253,16 +294,39 @@ def exibir_extrato(clientes):
         return
     else:
         transacoes = conta.historico.transacoes
-        extrato = "Extrato"
-        print(extrato.center(31 ,"_"))
-        
+        print('Extrato'.center(31, "_"))
+
         if not transacoes:
             return print(f"\nNão foram feitas transações.\nSeu saldo é de R${conta.saldo:.2f}\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         else:
             for transacao in transacoes:
                 print(f"{transacao['tipo']} de R${transacao['valor']:.2f}")
-    
+
     print(f"\nSeu saldo é de R${conta.saldo:.2f}")
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    
-    
+
+
+if __name__ == "__main__":
+    clientes = []
+    contas = []
+
+    while True:
+        opcao = menu()
+
+        match opcao:
+            case 0:
+                break
+            case 1:
+                depositar(clientes=clientes)
+            case 2:
+                sacar(clientes=clientes)
+            case 3:
+                exibir_extrato(clientes=clientes)
+            case 4:
+                criar_cliente(clientes=clientes)
+            case 5:
+                numero_conta = len(contas) + 1
+                criar_conta(numero_conta=numero_conta,
+                            clientes=clientes, contas=contas)
+            case 6:
+                listar_contas(contas=contas)
