@@ -36,12 +36,12 @@ class Conta:
     def sacar(self, valor):
 
         if valor > self._saldo:
-            print(f"\nOperação inválida, você não tem saldo suficiente. Saldo atual: R${
-                  self._saldo:.2f}")
+            print(f"\nOperação inválida, você não tem saldo suficiente. Saldo atual: R${self._saldo:.2f}")
 
         elif valor > 0:
             self._saldo -= valor
             print("\nSacando...")
+            print(f"\nSaque no valor de R${valor:.2f} realizado com sucesso!")
             return True
 
         else:
@@ -57,6 +57,7 @@ class Conta:
         else:
             self._saldo += valor
             print("\nDepositando...")
+            print(f"\nDeposito no valor de R${valor:.2f} realizado com sucesso!")
             return True
 
         return False
@@ -69,8 +70,7 @@ class ContaCorrente(Conta):
         self.limite_saques = limite_saques
 
     def sacar(self, valor):
-        numero_saques = len(
-            [transacao for transacao in self.historico._transacoes if transacao["tipo"] == Saque.__name__])
+        numero_saques = len([transacao for transacao in self.historico._transacoes if transacao["tipo"] == Saque.__name__])
         if self.limite_saques >= numero_saques:
             if valor <= 500:
                 super().sacar(valor)
@@ -121,7 +121,7 @@ class Cliente:
 
 class PessoaFisica(Cliente):
     def __init__(self, nome, data_nascimento, cpf, endereco):
-        super().__init__(endereco)
+        super().__init__(endereco, contas)
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.cpf = cpf
@@ -197,10 +197,9 @@ def criar_cliente(clientes):
             nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=endereco)
         clientes.append(cliente)
 
-        print(f"Cadastro realizado com sucesso {
-              nome}, agora crie sua conta no banco.")
+        print(f"\nCadastro realizado com sucesso {nome}, agora crie sua conta no banco.")
     else:
-        print("Ja existe um cliente cadastrado com esse cpf!")
+        print("\nJa existe um cliente cadastrado com esse cpf!")
 
 
 def criar_conta(numero_conta, clientes, contas):
@@ -208,13 +207,13 @@ def criar_conta(numero_conta, clientes, contas):
     cliente = filtrar_cliente(cpf, clientes)
 
     if not cliente:
-        print('Cliente não encontrado, operação encerrada.')
+        print('\nCliente não encontrado, operação encerrada.')
     else:
         conta = ContaCorrente.nova_conta(cliente=cliente, numero=numero_conta)
         contas.append(conta)
         cliente.contas.append(conta)
 
-        print('Conta criada com sucesso.')
+        print('\nConta corrente criada com sucesso.')
 
 
 def listar_contas(contas):
@@ -235,7 +234,7 @@ def filtrar_cliente(cpf, clientes):
 
 def resgatar_conta_cliente(cliente):
     if not cliente.contas:
-        print("Cliente não tem uma conta.")
+        print("\nO cliente não tem uma conta neste banco.")
         return
     return cliente.contas[0]
 
@@ -245,19 +244,18 @@ def depositar(clientes):
     cliente = filtrar_cliente(cpf, clientes)
 
     if not cliente:
-        print("O cliente não tem uma conta neste banco.")
-        return
-
-    valor = float(input("Qual valor do deposito? R$"))
-    transacao = Deposito(valor)
-
-    conta = resgatar_conta_cliente(cliente)
-
-    if not conta:
+        print("\nO cliente não é cadastrado nesse banco.")
         return
     else:
-        cliente.realizar_transacao(conta, transacao)
-    return print(f"Deposito no valor de R${valor:.2f} realizado com sucesso!")
+        conta = resgatar_conta_cliente(cliente)
+
+        if not conta:
+            return
+        else:
+            valor = float(input("Qual valor do deposito? R$"))
+            transacao = Deposito(valor)
+            cliente.realizar_transacao(conta, transacao)
+        return
 
 
 def sacar(clientes):
@@ -265,7 +263,7 @@ def sacar(clientes):
     cliente = filtrar_cliente(cpf, clientes)
 
     if not cliente:
-        print("O cliente não tem uma conta neste banco.")
+        print("\nO cliente não tem uma conta neste banco.")
         return
 
     valor = float(input("Qual valor do saque? R$"))
@@ -277,7 +275,7 @@ def sacar(clientes):
         return
     else:
         cliente.realizar_transacao(conta, transacao)
-    return print(f"Saque no valor de R${valor:.2f} realizado com sucesso!")
+        return
 
 
 def exibir_extrato(clientes):
@@ -285,7 +283,7 @@ def exibir_extrato(clientes):
     cliente = filtrar_cliente(cpf, clientes)
 
     if not cliente:
-        print("O cliente não tem uma conta neste banco.")
+        print("\nO cliente não tem uma conta neste banco.")
         return
 
     conta = resgatar_conta_cliente(cliente)
@@ -293,8 +291,8 @@ def exibir_extrato(clientes):
     if not conta:
         return
     else:
-        transacoes = conta.historico.transacoes
-        print('Extrato'.center(31, "_"))
+        transacoes = conta.historico._transacoes
+        print('Extrato'.center(27, "-"))
 
         if not transacoes:
             return print(f"\nNão foram feitas transações.\nSeu saldo é de R${conta.saldo:.2f}\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -303,7 +301,7 @@ def exibir_extrato(clientes):
                 print(f"{transacao['tipo']} de R${transacao['valor']:.2f}")
 
     print(f"\nSeu saldo é de R${conta.saldo:.2f}")
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("-"*27)
 
 
 if __name__ == "__main__":
